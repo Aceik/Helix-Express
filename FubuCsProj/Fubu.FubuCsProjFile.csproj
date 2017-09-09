@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{C6515A41-F0AF-47C3-8DD6-864A58B172A1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Fubu.CsProjFile</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Fubu.CsProjFile</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FubuCore, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Aceik.HelixExpress\packages\FubuCore.2.0.1.321\lib\FubuCore.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FubuCsProjFile.MSBuild\ByteOrderMark.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildImport.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildItem.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildItemGroup.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildObject.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildProject.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildProjectSettings.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildProperty.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildPropertyGroup.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildPropertyGroupMerged.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildPropertySet.cs" />
+    <Compile Include="FubuCsProjFile.MSBuild\MSBuildTarget.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\Input.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\ITemplateLibrary.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\MissingTemplate.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\Option.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\OptionSelection.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\ProjectCategory.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\ProjectRequest.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\ProjectTemplate.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\Substitutions.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\Template.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\TemplateBuilder.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\TemplateChoices.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\TemplateGraph.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\TemplateGraphExtensions.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\TemplateLibrary.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Graph\TemplateRequest.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\FilesTemplatePlanner.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\ITemplatePlanner.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\ITemplatePlannerAction.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\MissingInputException.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\ProjectPlanner.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\SolutionPlanner.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\TemplatePlan.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\TemplatePlanBuilder.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Planning\TemplatePlanner.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\AssemblyInfoAlteration.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\CodeFileTemplate.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\CopyFileToProject.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\CopyFileToSolution.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\CopyProjectReferences.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\CreateSolution.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\GemReference.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\GitIgnoreStep.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\IProjectAlteration.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\ITemplateLogger.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\ITemplateStep.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\ProjectDirectory.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\ProjectPlan.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\RakeFileTransform.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\ReadSolution.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\SolutionDirectory.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\SystemReference.cs" />
+    <Compile Include="FubuCsProjFile.Templating.Runtime\TemplateLogger.cs" />
+    <Compile Include="FubuCsProjFile.Templating\TemplateType.cs" />
+    <Compile Include="FubuCsProjFile.Templating\TextFile.cs" />
+    <Compile Include="FubuCsProjFile\AssemblyInfo.cs" />
+    <Compile Include="FubuCsProjFile\AssemblyReference.cs" />
+    <Compile Include="FubuCsProjFile\BuildConfiguration.cs" />
+    <Compile Include="FubuCsProjFile\CodeFile.cs" />
+    <Compile Include="FubuCsProjFile\Content.cs" />
+    <Compile Include="FubuCsProjFile\ContentCopy.cs" />
+    <Compile Include="FubuCsProjFile\CsProjFile.cs" />
+    <Compile Include="FubuCsProjFile\CsProjFileExtensions.cs" />
+    <Compile Include="FubuCsProjFile\DotNetVersion.cs" />
+    <Compile Include="FubuCsProjFile\EmbeddedResource.cs" />
+    <Compile Include="FubuCsProjFile\FrameworkNameDetector.cs" />
+    <Compile Include="FubuCsProjFile\GlobalSection.cs" />
+    <Compile Include="FubuCsProjFile\None.cs" />
+    <Compile Include="FubuCsProjFile\ProjectDependenciesSection.cs" />
+    <Compile Include="FubuCsProjFile\ProjectItem.cs" />
+    <Compile Include="FubuCsProjFile\ProjectReference.cs" />
+    <Compile Include="FubuCsProjFile\ProjectSection.cs" />
+    <Compile Include="FubuCsProjFile\Sln.cs" />
+    <Compile Include="FubuCsProjFile\Solution.cs" />
+    <Compile Include="FubuCsProjFile\SolutionLoading.cs" />
+    <Compile Include="FubuCsProjFile\SolutionProject.cs" />
+    <Compile Include="FubuCsProjFile\SourceControlInformation.cs" />
+    <Compile Include="FubuCsProjFile\StringExtensions.cs" />
+    <Compile Include="FubuCsProjFile\TargetFrameworkVersion.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FubuCsProjFile.MSBuild\Project.txt" />
+    <EmbeddedResource Include="FubuCsProjFile.Templating.Runtime\Class.txt" />
+    <EmbeddedResource Include="FubuCsProjFile\Solution.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
