@@ -3,10 +3,8 @@ using Xunit;
 
 namespace Aceik.HelixExpress.Tests
 {
-
     public class Tests
     {
-
         [Fact]
         public void Create_ShouldCreateLanguageModel()
         {
