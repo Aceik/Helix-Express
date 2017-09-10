@@ -386,17 +386,17 @@ namespace Fubu.CsProjFile.FubuCsProjFile
 
 		public void AddProject(CsProjFile project)
 		{
-			this.AddProject(this.ParentDirectory, project);
+			this.AddProject(this.ParentDirectory, project, String.Empty);
 		}
 
-		public void AddProject(string solutionDirectory, CsProjFile project)
+		public void AddProject(string solutionDirectory, CsProjFile project, string relativeTo)
 		{
 			SolutionProject existing = this.FindProject(project.ProjectName);
 			if (existing != null)
 			{
 				return;
 			}
-			SolutionProject reference = new SolutionProject(project, solutionDirectory);
+			SolutionProject reference = new SolutionProject(project, solutionDirectory, relativeTo);
 			this._projects.Add(reference);
 		}
 

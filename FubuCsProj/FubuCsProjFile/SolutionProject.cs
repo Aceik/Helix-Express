@@ -91,11 +91,17 @@ namespace Fubu.CsProjFile.FubuCsProjFile
 			return new SolutionProject(csProjFile, solutionDirectory);
 		}
 
-		public SolutionProject(CsProjFile csProjFile, string solutionDirectory)
+		public SolutionProject(CsProjFile csProjFile, string solutionDirectory, string relativePath = "")
 		{
 			this._project = new Lazy<CsProjFile>(() => csProjFile);
 			this._projectName = csProjFile.ProjectName;
-			this._relativePath = FubuCore.StringExtensions.PathRelativeTo(csProjFile.FileName, solutionDirectory);
+
+		    string fileName = csProjFile.FileName;
+		    if (!string.IsNullOrWhiteSpace(relativePath))
+		    {
+		        fileName = relativePath;
+		    }   
+            this._relativePath = fileName;
 			this._projectType = csProjFile.ProjectTypes().LastOrDefault<Guid>();
 			this._projectGuid = csProjFile.ProjectGuid;
 		}
