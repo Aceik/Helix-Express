@@ -18,43 +18,69 @@ namespace Aceik.HelixExpress
 
         private readonly string _templates = $"D:\\Development\\Projects\\Helix-Express\\template\\";
         private readonly string _slnTemplate;
-        private readonly string _newSlnFolder = $"D:\\Development\\Projects\\aceikhelix\\";
+        private readonly string _newRootFolder = $"D:\\Development\\Projects\\aceikhelix\\";
+        private readonly string _newExpressFolder = $"D:\\Development\\Projects\\aceikhelix\\HelixExpress\\";
         private readonly string _newSlnLocation;
         private readonly string _referenceSlnLocation;
 
         private readonly string _foundationCsprojTemplateLocation;
+        private readonly string _featureCsprojTemplateLocation;
+        private readonly string _websiteCsprojTemplateLocation;
+
         private readonly string _newFoundationCsprojeLocation;
+        private readonly string _newFeatureCsprojeLocation;
+        private readonly string _newWebsiteCsprojeLocation;
 
         private Solution GrandSolution { get; set; }
 
         public SolutionCreator()
         {
             _foundationCsprojTemplateLocation = _templates + $"\\Sitecore.Foundation.csproj";
+            _featureCsprojTemplateLocation = _templates + $"\\Sitecore.Feature.csproj";
+            _websiteCsprojTemplateLocation = _templates + $"\\Sitecore.Website.csproj";
             _slnTemplate = _templates + $"\\HelixExpress.Template.sln";
-            _referenceSlnLocation = _newSlnFolder + $"Habitat.sln";
-            _newSlnLocation = _newSlnFolder + $"Aceik.HelixExpress.sln";
-            _newFoundationCsprojeLocation = _newSlnFolder + $"Sitecore.Foundation.csproj";
+            _referenceSlnLocation = _newRootFolder + $"Habitat.sln";
+            _newSlnLocation = _newExpressFolder + $"Aceik.HelixExpress.sln";
+            _newFoundationCsprojeLocation = _newExpressFolder + $"Sitecore.Foundation.csproj";
+            _newFeatureCsprojeLocation = _newExpressFolder + $"Sitecore.Feature.csproj";
+            _newWebsiteCsprojeLocation = _newExpressFolder + $"Sitecore.Website.csproj";
         }
 
         public void LoadTemplateSlnFile()
         {
-            //_slnFile = SolutionFile.FromFile();
-            if(!File.Exists(_newSlnLocation))
+            if (!Directory.Exists(_newExpressFolder))
+                Directory.CreateDirectory(_newExpressFolder);
+
+            if (!File.Exists(_newSlnLocation))
                 File.Copy(_slnTemplate, _newSlnLocation);
 
-            this.GrandSolution = Solution.LoadFrom(_referenceSlnLocation);
+            this.GrandSolution = Solution.LoadFrom(_newSlnLocation);
 
-            //ProcessProjects("feature");
-            ProcessProjects("foundation", _foundationCsprojTemplateLocation);
-            //ProcessProjects("projects");
+            var featureProjet = ProcessProjects("feature", _featureCsprojTemplateLocation, _newFeatureCsprojeLocation);
+            this.GrandSolution.AddProject("Feature", featureProjet);
+
+            var foundationProject = ProcessProjects("foundation", _foundationCsprojTemplateLocation, _newFoundationCsprojeLocation);
+            this.GrandSolution.AddProject("Foundation", foundationProject);
+
+            var websiteProject = ProcessProjects("website", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
+            this.GrandSolution.AddProject("Project", websiteProject);
+
+            this.GrandSolution.Save();
         }
 
-        private void ProcessProjects(string layer, string tempalteCsproj)
+        private CsProjFile ProcessProjects(string layer, string tempalteCsproj, string newFile)
         {
-            if (!File.Exists(_newFoundationCsprojeLocation))
-                File.Copy(tempalteCsproj, _newFoundationCsprojeLocation);
+            if (!File.Exists(newFile))
+            {
+                File.Copy(tempalteCsproj, newFile);
+            }
+            else if (File.Exists(newFile))
+            {
+                File.Delete(newFile);
+                File.Copy(tempalteCsproj, newFile);
+            }
 
-            var newProject = CsProjFile.LoadFrom(_newFoundationCsprojeLocation);
+            var newProject = CsProjFile.LoadFrom(newFile);
 
             AttachCompilations(newProject, layer);
 
@@ -62,7 +88,16 @@ namespace Aceik.HelixExpress
             var deDuped = RemoveDuplicates(referencesUnique);
             AttachReferences(newProject, deDuped);
 
+            AttachConfigs(newProject, layer);
+
+            AttachOtherContent(newProject, layer);
+
+            Attach(newProject, layer, "None", ".transform");
+
+            Attach(newProject, layer, "Folder", "");
+
             newProject.Save();
+            return newProject;
         }
 
         public Dictionary<string, MSBuildItem> CollectReferences(CsProjFile newProject, string layer)
@@ -97,6 +132,57 @@ namespace Aceik.HelixExpress
                     {
                         string relativeDirectory = project.RelativePath.Replace(project.ProjectName + ".csproj", "").Replace("/", "\\");
                         itemGroup.AddNewItem("Compile", $"{relativeDirectory}{compile.Include}");
+                    }
+                }
+            }
+        }
+
+        public void AttachConfigs(CsProjFile newProject, string layer)
+        {
+            var itemGroup = newProject.BuildProject.AddNewItemGroup();
+            foreach (var project in GrandSolution.Projects.Where(x => x.ProjectName.ToLower().Contains(layer)))
+            {
+                foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
+                {
+                    var refs = itemgroup.Items.Where(x => x.Name == "Content" && x.Include.EndsWith(".config")).ToList();
+                    foreach (var compile in refs)
+                    {
+                        string relativeDirectory = project.RelativePath.Replace(project.ProjectName + ".csproj", "").Replace("/", "\\");
+                        itemGroup.AddNewItem("Content", $"{relativeDirectory}{compile.Include}");
+                    }
+                }
+            }
+        }
+
+        public void AttachOtherContent(CsProjFile newProject, string layer)
+        {
+            var itemGroup = newProject.BuildProject.AddNewItemGroup();
+            foreach (var project in GrandSolution.Projects.Where(x => x.ProjectName.ToLower().Contains(layer)))
+            {
+                foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
+                {
+                    var refs = itemgroup.Items.Where(x => x.Name == "Content" && !x.Include.EndsWith(".config") && !x.Include.EndsWith(".cs")).ToList();
+                    foreach (var compile in refs)
+                    {
+                        string relativeDirectory = project.RelativePath.Replace(project.ProjectName + ".csproj", "").Replace("/", "\\");
+                        itemGroup.AddNewItem("Content", $"{relativeDirectory}{compile.Include}");
+                    }
+                }
+            }
+        }
+
+        public void Attach(CsProjFile newProject, string layer, string nodeName, string fileFilter)
+        {
+            var itemGroup = newProject.BuildProject.AddNewItemGroup();
+            foreach (var project in GrandSolution.Projects.Where(x => x.ProjectName.ToLower().Contains(layer)))
+            {
+                foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
+                {
+                    var refs = itemgroup.Items.Where(x => x.Name == nodeName && x.Include.EndsWith(fileFilter)).ToList();
+                    foreach (var compile in refs)
+                    {
+                        string relativeDirectory = project.RelativePath.Replace(project.ProjectName + ".csproj", "").Replace("/", "\\");
+                        itemGroup.AddNewItem(nodeName, $"{relativeDirectory}{compile.Include}");
                     }
                 }
             }
