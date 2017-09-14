@@ -63,14 +63,14 @@ namespace Aceik.HelixExpress
             this.ExpressSolution = Solution.LoadFrom(_newSlnLocation);
             this.OriginalSolution = Solution.LoadFrom(_referenceSlnLocation);
 
-            var featureProjet = ProcessProjects("feature", _featureCsprojTemplateLocation, _newFeatureCsprojeLocation);
-            this.ExpressSolution.AddProject("Feature", featureProjet, featureProjet.ProjectName + ".csproj");
+            //var featureProjet = ProcessProjects("feature", _featureCsprojTemplateLocation, _newFeatureCsprojeLocation);
+            //this.ExpressSolution.AddProject("Feature", featureProjet, featureProjet.ProjectName + ".csproj");
 
             var foundationProject = ProcessProjects("foundation", _foundationCsprojTemplateLocation, _newFoundationCsprojeLocation);
             this.ExpressSolution.AddProject("Foundation", foundationProject, foundationProject.ProjectName + ".csproj");
 
-            var websiteProject = ProcessProjects("website", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
-            this.ExpressSolution.AddProject("Project", websiteProject, websiteProject.ProjectName + ".csproj");
+            //var websiteProject = ProcessProjects("website", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
+            //this.ExpressSolution.AddProject("Project", websiteProject, websiteProject.ProjectName + ".csproj");
 
             this.ExpressSolution.Save();
         }
@@ -89,7 +89,7 @@ namespace Aceik.HelixExpress
 
             var newProject = CsProjFile.LoadFrom(newFile);
 
-            Attach(newProject, layer, "Compile", ".cs");
+            Attach(newProject, layer, "Compile", ".cs", "AssemblyInfo.cs");
 
             var referencesUnique = CollectReferences(newProject, layer);
             var deDuped = RemoveDuplicates(referencesUnique);
@@ -144,7 +144,7 @@ namespace Aceik.HelixExpress
             }
         }
 
-        public void Attach(CsProjFile newProject, string layer, string nodeName, string fileFilter)
+        public void Attach(CsProjFile newProject, string layer, string nodeName, string fileFilter, string nameFilter = "")
         {
             var itemGroup = newProject.BuildProject.AddNewItemGroup();
             foreach (var project in OriginalSolution.Projects.Where(x => x.ProjectName.ToLower().Contains(layer)))
@@ -152,6 +152,10 @@ namespace Aceik.HelixExpress
                 foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
                 {
                     var refs = itemgroup.Items.Where(x => x.Name == nodeName && x.Include.EndsWith(fileFilter)).ToList();
+
+                    if (!string.IsNullOrWhiteSpace(nameFilter))
+                        refs = refs.Where(x => !x.Include.Contains(nameFilter)).ToList();
+
                     foreach (var compile in refs)
                     {
                         string relativeDirectory = project.RelativePath.Replace(project.ProjectName + ".csproj", "").Replace("/", "\\");
@@ -166,9 +170,15 @@ namespace Aceik.HelixExpress
             var itemGroup2 = newProject.BuildProject.AddNewItemGroup();
             foreach (var refenceItem in referencesUnique)
             {
-                var refItem = itemGroup2.AddNewItem("Reference", refenceItem.Value.Include);
+                var include = refenceItem.Value.Include;
+               
+                var refItem = itemGroup2.AddNewItem("Reference", include);
                 if (refenceItem.Value.HasMetadata("HintPath"))
-                    refItem.SetMetadata("HintPath", refenceItem.Value.GetMetadata("HintPath"));
+                {
+                    var hintPath = refenceItem.Value.GetMetadata("HintPath").Replace("..\\..\\..\\..\\", ".\\");
+                    refItem.SetMetadata("HintPath", hintPath);
+                }
+                    
                 if (refenceItem.Value.HasMetadata("Private"))
                     refItem.SetMetadata("Private", refenceItem.Value.GetMetadata("Private"));
             }
@@ -179,7 +189,7 @@ namespace Aceik.HelixExpress
             Dictionary<string, MSBuildItem> newCopy = new Dictionary<string, MSBuildItem>();
             foreach (var reference in referencesUnique)
             {
-                if (reference.Key == "Sitecore.Kernel")
+                if (reference.Key .Equals("System.Web.Webpages"))
                 {
                     
                 }
@@ -189,7 +199,7 @@ namespace Aceik.HelixExpress
                     string uniqueName = reference.Key.Split(',')[0];
                     if (!newCopy.ContainsKey(uniqueName))
                     {
-                        newCopy.Add(reference.Key, reference.Value);
+                        newCopy.Add(uniqueName, reference.Value);
                     }
                     else
                     {
@@ -207,7 +217,7 @@ namespace Aceik.HelixExpress
                     }
                     else
                     {
-                        newCopy.Add(reference.Key, reference.Value);
+                        newCopy.Add(uniqueName, reference.Value);
                     }
                 }
             }
