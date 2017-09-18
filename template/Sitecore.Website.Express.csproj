@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sitecore.Habitat.Website</RootNamespace>
-    <AssemblyName>Sitecore.Habitat.Website</AssemblyName>
+    <RootNamespace>Sitecore.Website.Express</RootNamespace>
+    <AssemblyName>Sitecore.Website.Express</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -105,4 +105,16 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  
+  <ItemGroup>
+    <ProjectReference Include="Sitecore.Feature.csproj">
+      <Project>{3f61c57d-50d9-4194-8196-ef5f7aa4cce5}</Project>
+      <Name>Sitecore.Feature</Name>
+    </ProjectReference>
+    <ProjectReference Include="Sitecore.Foundation.csproj">
+      <Project>{ce34a3b7-b91a-41ba-8b16-c1e131e1c621}</Project>
+      <Name>Sitecore.Foundation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  
 </Project>

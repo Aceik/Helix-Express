@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sitecore.Feature</RootNamespace>
-    <AssemblyName>Sitecore.Feature</AssemblyName>
+    <RootNamespace>Sitecore.Feature.Express</RootNamespace>
+    <AssemblyName>Sitecore.Feature.Express</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -84,4 +84,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  
+  <ItemGroup>
+    <ProjectReference Include="Sitecore.Foundation.csproj">
+      <Project>{ce34a3b7-b91a-41ba-8b16-c1e131e1c621}</Project>
+      <Name>Sitecore.Foundation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  
 </Project>

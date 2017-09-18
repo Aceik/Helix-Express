@@ -36,15 +36,15 @@ namespace Aceik.HelixExpress
 
         public SolutionCreator()
         {
-            _foundationCsprojTemplateLocation = _templates + $"Sitecore.Foundation.csproj";
-            _featureCsprojTemplateLocation = _templates + $"Sitecore.Feature.csproj";
-            _websiteCsprojTemplateLocation = _templates + $"Sitecore.Website.csproj";
+            _foundationCsprojTemplateLocation = _templates + $"Sitecore.Foundation.Express.csproj";
+            _featureCsprojTemplateLocation = _templates + $"Sitecore.Feature.Express.csproj";
+            _websiteCsprojTemplateLocation = _templates + $"Sitecore.Website.Express.csproj";
             _slnTemplate = _templates + $"HelixExpress.Template.sln";
             _referenceSlnLocation = _newRootFolder + $"Habitat.sln";
             _newSlnLocation = _newExpressFolder + $"Aceik.HelixExpress.sln";
-            _newFoundationCsprojeLocation = _newExpressFolder + $"Sitecore.Foundation.csproj";
-            _newFeatureCsprojeLocation = _newExpressFolder + $"Sitecore.Feature.csproj";
-            _newWebsiteCsprojeLocation = _newExpressFolder + $"Sitecore.Website.csproj";
+            _newFoundationCsprojeLocation = _newExpressFolder + $"Sitecore.Foundation.Express.csproj";
+            _newFeatureCsprojeLocation = _newExpressFolder + $"Sitecore.Feature.Express.csproj";
+            _newWebsiteCsprojeLocation = _newExpressFolder + $"Sitecore.Website.Express.csproj";
         }
 
         public void LoadTemplateSlnFile()
@@ -63,14 +63,14 @@ namespace Aceik.HelixExpress
             this.ExpressSolution = Solution.LoadFrom(_newSlnLocation);
             this.OriginalSolution = Solution.LoadFrom(_referenceSlnLocation);
 
-            //var featureProjet = ProcessProjects("feature", _featureCsprojTemplateLocation, _newFeatureCsprojeLocation);
-            //this.ExpressSolution.AddProject("Feature", featureProjet, featureProjet.ProjectName + ".csproj");
+            var featureProjet = ProcessProjects("feature", _featureCsprojTemplateLocation, _newFeatureCsprojeLocation);
+            this.ExpressSolution.AddProject("Feature", featureProjet, featureProjet.ProjectName + ".csproj");
 
             var foundationProject = ProcessProjects("foundation", _foundationCsprojTemplateLocation, _newFoundationCsprojeLocation);
             this.ExpressSolution.AddProject("Foundation", foundationProject, foundationProject.ProjectName + ".csproj");
 
-            //var websiteProject = ProcessProjects("website", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
-            //this.ExpressSolution.AddProject("Project", websiteProject, websiteProject.ProjectName + ".csproj");
+            var websiteProject = ProcessProjects("website", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
+            this.ExpressSolution.AddProject("Project", websiteProject, websiteProject.ProjectName + ".csproj");
 
             this.ExpressSolution.Save();
         }
@@ -92,7 +92,8 @@ namespace Aceik.HelixExpress
             Attach(newProject, layer, "Compile", ".cs", "AssemblyInfo.cs");
 
             var referencesUnique = CollectReferences(newProject, layer);
-            var deDuped = RemoveDuplicates(referencesUnique);
+            var deDuped = RemoveDuplicateIncludeKeys(referencesUnique);
+            //deDuped = RemoveDuplicateHints(referencesUnique);
             AttachReferences(newProject, deDuped);
 
             Attach(newProject, layer, "Content", ".config");
@@ -184,16 +185,11 @@ namespace Aceik.HelixExpress
             }
         }
 
-        public Dictionary<string, MSBuildItem> RemoveDuplicates(Dictionary<string, MSBuildItem> referencesUnique)
+        public Dictionary<string, MSBuildItem> RemoveDuplicateIncludeKeys(Dictionary<string, MSBuildItem> referencesUnique)
         {
             Dictionary<string, MSBuildItem> newCopy = new Dictionary<string, MSBuildItem>();
             foreach (var reference in referencesUnique)
             {
-                if (reference.Key .Equals("System.Web.Webpages"))
-                {
-                    
-                }
-
                 if (reference.Key.Contains(","))
                 {
                     string uniqueName = reference.Key.Split(',')[0];
@@ -223,5 +219,37 @@ namespace Aceik.HelixExpress
             }
             return newCopy;
         }
+
+        //public Dictionary<string, MSBuildItem> RemoveDuplicateHints(Dictionary<string, MSBuildItem> referencesUnique)
+        //{
+        //    Dictionary<string, MSBuildItem> newCopy = new Dictionary<string, MSBuildItem>();
+        //    foreach (var reference in referencesUnique)
+        //    {
+
+        //        bool moreThanOne = referencesUnique.Count(x => x.Value.HasMetadata("HintPath") && x.Value.GetMetadata("HintPath") == reference.Value.GetMetadata("HintPath")) > 1;
+        //        if (moreThanOne)
+        //        {
+                    
+        //        }
+
+        //        bool onehasAComma = referencesUnique.Count(x => x.Value.GetMetadata("HintPath") == reference.Value.GetMetadata("HintPath") && x.Value.Include.Contains(",")) >= 1;
+        //        if (moreThanOne && onehasAComma)
+        //        {
+        //            if (reference.Value.Include.Contains(","))
+        //            {
+        //                string uniqueName = reference.Key.Split(',')[0];
+        //                if (!newCopy.ContainsKey(uniqueName))
+        //                {
+        //                    newCopy.Add(uniqueName, reference.Value);
+        //                    continue;
+        //                }
+        //            }
+        //        }
+
+        //        if (!newCopy.ContainsKey(reference.Key))
+        //            newCopy.Add(reference.Key, reference.Value);
+        //    }
+        //    return newCopy;
+        //}
     }
 }
