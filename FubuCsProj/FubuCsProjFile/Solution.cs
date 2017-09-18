@@ -306,7 +306,7 @@ namespace Fubu.CsProjFile.FubuCsProjFile
 
 		public void Save(string filename, bool saveProjects = true)
 		{
-			this.calculateProjectConfigurationPlatforms();
+			this.CalculateProjectConfigurationPlatforms();
 			StringWriter writer = new StringWriter();
 			this.EnsureHeaders();
 			GenericEnumerableExtensions.Each<string>(this._header, delegate(string x)
@@ -342,7 +342,7 @@ namespace Fubu.CsProjFile.FubuCsProjFile
 			}
 		}
 
-		private void calculateProjectConfigurationPlatforms()
+		private void CalculateProjectConfigurationPlatforms()
 		{
 			GlobalSection section = this.FindSection("ProjectConfigurationPlatforms");
 			if (section == null)

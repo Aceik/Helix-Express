@@ -16,6 +16,8 @@ namespace Aceik.HelixExpress
     {
         private SolutionFile _slnFile;
 
+        private bool _includeTestProjects = false;
+
         private readonly string _templates = $"D:\\Development\\Projects\\Helix-Express\\template\\";
         private readonly string _slnTemplate;
         private readonly string _newRootFolder = $"D:\\Development\\Projects\\aceikhelix\\";
@@ -153,13 +155,17 @@ namespace Aceik.HelixExpress
                 foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
                 {
                     var refs = itemgroup.Items.Where(x => x.Name == nodeName && x.Include.EndsWith(fileFilter)).ToList();
-
+                    
                     if (!string.IsNullOrWhiteSpace(nameFilter))
                         refs = refs.Where(x => !x.Include.Contains(nameFilter)).ToList();
 
                     foreach (var compile in refs)
                     {
                         string relativeDirectory = project.RelativePath.Replace(project.ProjectName + ".csproj", "").Replace("/", "\\");
+
+                        if (!_includeTestProjects && fileFilter == ".cs" && relativeDirectory.ToLower().Contains("tests"))
+                            continue;
+
                         itemGroup.AddNewItem(nodeName, $"{relativeDirectory}{compile.Include}");
                     }
                 }
