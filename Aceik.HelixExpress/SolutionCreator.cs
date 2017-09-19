@@ -19,9 +19,10 @@ namespace Aceik.HelixExpress
         private bool _includeTestProjects = false;
 
         private readonly string _templates = $"D:\\Development\\Projects\\Helix-Express\\template\\";
+        private readonly string _companyPrefix = $"FLG";
         private readonly string _slnTemplate;
-        private readonly string _newRootFolder = $"D:\\Development\\Projects\\aceikhelix\\";
-        private readonly string _newExpressFolder = $"D:\\Development\\Projects\\aceikhelix\\";
+        private readonly string _newRootFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
+        private readonly string _newExpressFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
         private readonly string _newSlnLocation;
         private readonly string _referenceSlnLocation;
 
@@ -40,13 +41,13 @@ namespace Aceik.HelixExpress
         {
             _foundationCsprojTemplateLocation = _templates + $"Sitecore.Foundation.Express.csproj";
             _featureCsprojTemplateLocation = _templates + $"Sitecore.Feature.Express.csproj";
-            _websiteCsprojTemplateLocation = _templates + $"Sitecore.Website.Express.csproj";
+            _websiteCsprojTemplateLocation = _templates + $"Sitecore.Project.Express.csproj";
             _slnTemplate = _templates + $"HelixExpress.Template.sln";
-            _referenceSlnLocation = _newRootFolder + $"Habitat.sln";
+            _referenceSlnLocation = _newRootFolder + $"FLG.FitnessFirst.Sitecore.sln";
             _newSlnLocation = _newExpressFolder + $"Aceik.HelixExpress.sln";
             _newFoundationCsprojeLocation = _newExpressFolder + $"Sitecore.Foundation.Express.csproj";
             _newFeatureCsprojeLocation = _newExpressFolder + $"Sitecore.Feature.Express.csproj";
-            _newWebsiteCsprojeLocation = _newExpressFolder + $"Sitecore.Website.Express.csproj";
+            _newWebsiteCsprojeLocation = _newExpressFolder + $"Sitecore.Project.Express.csproj";
         }
 
         public void LoadTemplateSlnFile()
@@ -71,7 +72,7 @@ namespace Aceik.HelixExpress
             var foundationProject = ProcessProjects("foundation", _foundationCsprojTemplateLocation, _newFoundationCsprojeLocation);
             this.ExpressSolution.AddProject("Foundation", foundationProject, foundationProject.ProjectName + ".csproj");
 
-            var websiteProject = ProcessProjects("website", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
+            var websiteProject = ProcessProjects("project", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
             this.ExpressSolution.AddProject("Project", websiteProject, websiteProject.ProjectName + ".csproj");
 
             this.ExpressSolution.Save();
@@ -120,7 +121,11 @@ namespace Aceik.HelixExpress
                     var references = itemgroup.Items.Where(x => x.Name == "Reference").ToList();
                     foreach (var referenceItem in references)
                     {
-                        if (!referencesUnique.ContainsKey(referenceItem.Include))
+
+                        // Don't need references within the same layer
+                        bool sameLayer = referenceItem.Include.ToLower().StartsWith(($"{_companyPrefix}.{layer}").ToLower());
+
+                        if (!referencesUnique.ContainsKey(referenceItem.Include) && !sameLayer)
                         {
                             referencesUnique.Add(referenceItem.Include, referenceItem);
                         }
@@ -152,6 +157,9 @@ namespace Aceik.HelixExpress
             var itemGroup = newProject.BuildProject.AddNewItemGroup();
             foreach (var project in OriginalSolution.Projects.Where(x => x.ProjectName.ToLower().Contains(layer)))
             {
+                if (!_includeTestProjects && project.ProjectName.ToLower().Contains("testing"))
+                    continue;
+
                 foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
                 {
                     var refs = itemgroup.Items.Where(x => x.Name == nodeName && x.Include.EndsWith(fileFilter)).ToList();
@@ -178,11 +186,16 @@ namespace Aceik.HelixExpress
             foreach (var refenceItem in referencesUnique)
             {
                 var include = refenceItem.Value.Include;
-               
+
+                if (!_includeTestProjects && include.ToLower().Contains("xunit"))
+                    continue;
+
                 var refItem = itemGroup2.AddNewItem("Reference", include);
                 if (refenceItem.Value.HasMetadata("HintPath"))
                 {
                     var hintPath = refenceItem.Value.GetMetadata("HintPath").Replace("..\\..\\..\\..\\", ".\\");
+                    hintPath = hintPath.Replace(".\\..\\packages\\", ".\\packages\\");
+                        
                     refItem.SetMetadata("HintPath", hintPath);
                 }
                     
