@@ -144,8 +144,11 @@ gulp.task("Express-Publish-All-Configs", function () {
       console.log("Publishing from " + file.path);
       gulp.src(file.path + files, { base: file.path })
 		
+		.pipe(replace(','+  config.companyPrefix +'\.Foundation\.([a-zA-Z])*', ', Sitecore.Foundation.Express'))
 		.pipe(replace(', '+  config.companyPrefix +'\.Foundation\.([a-zA-Z])*', ', Sitecore.Foundation.Express'))
+		.pipe(replace(','+  config.companyPrefix +'\.Feature\.([a-zA-Z])*', ', Sitecore.Feature.Express'))
 		.pipe(replace(', '+  config.companyPrefix +'\.Feature\.([a-zA-Z])*', ', Sitecore.Feature.Express'))
+		.pipe(replace(','+  config.companyPrefix +'\.Project\.([a-zA-Z\.])*', ', Sitecore.Project.Express'))
 		.pipe(replace(', '+  config.companyPrefix +'\.Project\.([a-zA-Z\.])*', ', Sitecore.Project.Express'))
 		.pipe(newer(destination))
         .pipe(debug({ title: "Copying " }))
