@@ -9,20 +9,20 @@ var runSequence = require("run-sequence");
 var nugetRestore = require('gulp-nuget-restore');
 var fs = require('fs');
 var yargs = require("yargs").argv;
-var unicorn = require("./unicorn.js");
-var habitat = require("./habitat.js");
-var helix = require("./helix.js");
+var unicorn = require("./../unicorn.js");
+var habitat = require("./../habitat.js");
+var helix = require("./../helix.js");
 var del = require('del');
 var replace = require('gulp-string-replace');
 
 var exec = require('child_process').exec;
 
 var config;
-if (fs.existsSync('../gulp-config.js.user')) {
-    config = require("../gulp-config.js.user")();
+if (fs.existsSync('./../../gulp-config.js.user')) {
+    config = require("./../../gulp-config.js.user")();
 }
 else {
-    config = require("../gulp-config.js")()
+    config = require("./../../gulp-config.js")()
 }
 
 module.exports.config = config;
@@ -84,7 +84,7 @@ gulp.task("Express-Build-Solution", function () {
         targets = ["Clean", "Build"];
     }
 
-    var solution = "./" + config.expressSolutionName + ".sln";
+    var solution = "../" + config.expressSolutionName + ".sln";
     return gulp.src(solution)
         .pipe(msbuild({
             targets: targets,
@@ -107,7 +107,7 @@ gulp.task("Express-Publish-All-Projects", function () {
 });
 
 gulp.task("Express-Publish-Assemblies", function () {
-    var root = "./src";
+    var root = "./../src";
 
     var binFiles = [
         root + "/bin/Sitecore.*.Express.*.{dll,pdb}",
@@ -158,7 +158,7 @@ gulp.task("express-pac", function (callback) {
 });
 
 gulp.task("Express-Publish-All-Configs", function () {
-  var root = "./src";
+  var root = "./../src";
   var roots = [root + "/**/App_Config", "!" + root + "/**/obj/**/App_Config"];
   var files = "/**/*.config";
   var destination = config.websiteRoot + "\\App_Config";
@@ -191,7 +191,7 @@ gulp.task("Express-Patch-Web-Config", function () {
 });
 
 gulp.task("Express-Patch-Unicorn-Location", function () {
-  var root = "./src";
+  var root = "./../src";
   var roots = [root];
   var files = "/**/z.FitnessFirst.DevSettings.config";
   var destination = "./src-express-unicorn";
@@ -211,7 +211,7 @@ gulp.task("Express-Patch-Unicorn-Location", function () {
 });
 
 gulp.task("Express-Patch-Unicorn-Files", function () {
-  var root = "./src";
+  var root = "./../src";
   var roots = [root];
   var files = "/**/**/serialization/**/*.yml";
   var destination = "./exp";
