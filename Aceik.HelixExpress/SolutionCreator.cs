@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Fubu.CsProjFile.FubuCsProjFile;
@@ -18,11 +19,11 @@ namespace Aceik.HelixExpress
 
         private bool _includeTestProjects = false;
 
-        private readonly string _templates = $"D:\\Development\\Projects\\Helix-Express\\template\\";
-        private readonly string _companyPrefix = $"FLG";
+        private string _templates = $"D:\\Development\\Projects\\Helix-Express\\template\\";
+        private string _companyPrefix = $"FLG";
         private readonly string _slnTemplate;
-        private readonly string _newRootFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
-        private readonly string _newExpressFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
+        private string _newRootFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
+        private string _newExpressFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
         private readonly string _newSlnLocation;
         private readonly string _referenceSlnLocation;
 
@@ -37,8 +38,14 @@ namespace Aceik.HelixExpress
         private Solution ExpressSolution { get; set; }
         private Solution OriginalSolution { get; set; }
 
-        public SolutionCreator()
+        public SolutionCreator(string companyPrefix, string solutionFolderPath, string helixExpressTemplatesFolder)
         {
+            if(!string.IsNullOrWhiteSpace(companyPrefix))
+                _companyPrefix = companyPrefix;
+            if (!string.IsNullOrWhiteSpace(solutionFolderPath))
+                _newRootFolder = _newExpressFolder = solutionFolderPath;
+            if (!string.IsNullOrWhiteSpace(helixExpressTemplatesFolder))
+                _templates = helixExpressTemplatesFolder;
             _foundationCsprojTemplateLocation = _templates + $"Sitecore.Foundation.Express.csproj";
             _featureCsprojTemplateLocation = _templates + $"Sitecore.Feature.Express.csproj";
             _websiteCsprojTemplateLocation = _templates + $"Sitecore.Project.Express.csproj";
@@ -52,30 +59,51 @@ namespace Aceik.HelixExpress
 
         public void LoadTemplateSlnFile()
         {
+            Console.Out.WriteLine("Beginning Conversion");
+
             if (!Directory.Exists(_newExpressFolder))
+            {
                 Directory.CreateDirectory(_newExpressFolder);
+                Console.Out.WriteLine($"Creating Directory {_newExpressFolder}");
+            }
 
             if (!File.Exists(_newSlnLocation))
+            {
                 File.Copy(_slnTemplate, _newSlnLocation);
+                Console.Out.WriteLine($"Creating new solution file: {_newSlnLocation}");
+            }
             else
             {
+                Console.Out.WriteLine($"Clearing solution file: {_newSlnLocation}");
                 File.Delete(_newSlnLocation);
+                Console.Out.WriteLine($"Recreating solution file: {_newSlnLocation}");
                 File.Copy(_slnTemplate, _newSlnLocation);
             }
 
             this.ExpressSolution = Solution.LoadFrom(_newSlnLocation);
+            Console.Out.WriteLine($"Solution loaded: {_newSlnLocation}");
             this.OriginalSolution = Solution.LoadFrom(_referenceSlnLocation);
+            Console.Out.WriteLine($"Original Solution loaded: {_referenceSlnLocation}");
 
+            Console.Out.WriteLine($"Processing Feature projects");
             var featureProjet = ProcessProjects("feature", _featureCsprojTemplateLocation, _newFeatureCsprojeLocation);
+            Console.Out.WriteLine($"Finished processing Feature projects");
             this.ExpressSolution.AddProject("Feature", featureProjet, featureProjet.ProjectName + ".csproj");
 
+            Console.Out.WriteLine($"Processing foundation projects");
             var foundationProject = ProcessProjects("foundation", _foundationCsprojTemplateLocation, _newFoundationCsprojeLocation);
+            Console.Out.WriteLine($"Finished processing Foundation projects");
             this.ExpressSolution.AddProject("Foundation", foundationProject, foundationProject.ProjectName + ".csproj");
 
+            Console.Out.WriteLine($"Processing project layer projects");
             var websiteProject = ProcessProjects("project", _websiteCsprojTemplateLocation, _newWebsiteCsprojeLocation);
+            Console.Out.WriteLine($"Finished processing project layer projects");
             this.ExpressSolution.AddProject("Project", websiteProject, websiteProject.ProjectName + ".csproj");
 
             this.ExpressSolution.Save();
+            Console.Out.WriteLine($"New solution is up to date.");
+            Console.Out.WriteLine($"*****************************");
+            Console.Out.WriteLine($"Open the new SLN file and attempt to build in Visual Studio");
         }
 
         private CsProjFile ProcessProjects(string layer, string tempalteCsproj, string newFile)
@@ -92,12 +120,17 @@ namespace Aceik.HelixExpress
 
             var newProject = CsProjFile.LoadFrom(newFile);
 
+            Console.Out.WriteLine($"Processing Project: {newProject.ProjectName}");
+
             Attach(newProject, layer, "Compile", ".cs", "AssemblyInfo.cs");
 
             var referencesUnique = CollectReferences(newProject, layer);
             var deDuped = RemoveDuplicateIncludeKeys(referencesUnique);
             //deDuped = RemoveDuplicateHints(referencesUnique);
+
+            Console.Out.WriteLine($"{newProject.ProjectName}: attaching references");
             AttachReferences(newProject, deDuped);
+            Console.Out.WriteLine($"{newProject.ProjectName}: FINISHED -- attaching references");
 
             Attach(newProject, layer, "Content", ".config");
 
@@ -140,6 +173,8 @@ namespace Aceik.HelixExpress
             var itemGroup = newProject.BuildProject.AddNewItemGroup();
             foreach (var project in OriginalSolution.Projects.Where(x => x.ProjectName.ToLower().Contains(layer)))
             {
+                Console.Out.WriteLine($"Processing Project other content: {project.ProjectName}");
+
                 foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
                 {
                     var refs = itemgroup.Items.Where(x => x.Name == "Content" && !x.Include.EndsWith(".config") && !x.Include.EndsWith(".cs")).ToList();
@@ -159,6 +194,8 @@ namespace Aceik.HelixExpress
             {
                 if (!_includeTestProjects && project.ProjectName.ToLower().Contains("testing"))
                     continue;
+
+                Console.Out.WriteLine($"Processing project: {project.ProjectName} layer: {layer}, files: *{fileFilter}");
 
                 foreach (var itemgroup in project.Project.BuildProject.ItemGroups)
                 {
@@ -218,7 +255,7 @@ namespace Aceik.HelixExpress
                     }
                     else
                     {
-                        //Log.Debug($"Found duplicate {reference.Key}");  
+                        Console.Out.WriteLine($"Found duplicate reference {reference.Key}");
                     }
                 }
                 else   // No comma means versioning information is not present
@@ -228,7 +265,7 @@ namespace Aceik.HelixExpress
                     // exists in the original dictionary and is not the same entry
                     if (referencesUnique.Keys.Any(x => x.Contains(uniqueName+",")) && referencesUnique.Keys.Any(x => x.Equals(uniqueName)))
                     {
-                        //Log.Debug($"Found duplicate {reference.Key}");
+                        Console.Out.WriteLine($"Found duplicate reference {reference.Key}");
                     }
                     else
                     {

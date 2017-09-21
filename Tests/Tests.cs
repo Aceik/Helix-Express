@@ -8,7 +8,7 @@ namespace Aceik.HelixExpress.Tests
         [Fact]
         public void Create_ShouldCreateLanguageModel()
         {
-            new SolutionCreator().LoadTemplateSlnFile();
+            new SolutionCreator("","", "").LoadTemplateSlnFile();
         }
     }
 }
