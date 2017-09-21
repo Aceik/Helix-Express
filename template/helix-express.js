@@ -25,6 +25,15 @@ else {
 
 module.exports.config = config;
 
+gulp.task("express-setup", function (callback) {
+    config.runCleanBuilds = true;
+    return runSequence(
+        "Express-Patch-Unicorn-Location",
+        "Express-Patch-Unicorn-Files",
+		"clean:express:old",
+        callback);
+});
+
 gulp.task("express", function (callback) {
     config.runCleanBuilds = true;
     return runSequence(

@@ -1,14 +1,21 @@
 1)  Add this to gulpfile.js in the root folder:
 var express = require("./scripts/helix-express.js");
+- Also add the file helix-express.js  under the "Scripts" folder in root
+
 2) in package.json (under the root) under devDependencies  add in "gulp-string-replace": "^0.4.0"
+
 3) run "npm install" in the root
+
 4) Open and build the solution in Visual Studio
-5) run "gulp clean:express:old"  -- to remove all the old dlls from the uncompressed project. 
+
+5) run "gulp express-setup"  
 Note must have variable 'companyPrefix: "MyPrefix",' set in gulp-config.js
+
+-- to remove all the old dlls from the uncompressed project. 
+-- to change the unicorn location
+-- to copy the unicorn files to a new location with adjusted namespaces
+
 6) run "gulp express"
-
-
-
 
 Cavets 
 
