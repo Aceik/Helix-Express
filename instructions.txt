@@ -1,0 +1,17 @@
+1)  Add this to gulpfile.js in the root folder:
+var express = require("./scripts/helix-express.js");
+2) in package.json (under the root) under devDependencies  add in "gulp-string-replace": "^0.4.0"
+3) run "npm install" in the root
+4) Open and build the solution in Visual Studio
+5) run "gulp clean:express:old"  -- to remove all the old dlls from the uncompressed project. 
+Note must have variable 'companyPrefix: "MyPrefix",' set in gulp-config.js
+6) run "gulp express"
+
+
+
+
+Cavets 
+
+1)  -- This will only fix config files with namespace matches within Foundation/Feature/Project folders.
+2)  -- Will not change namespaces inside the Web.config -- If you have these 
+   A) If you have namespaces inside the web.config run "gulp Express-Patch-Web-Config"
