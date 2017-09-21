@@ -14,7 +14,8 @@ var habitat = require("./habitat.js");
 var helix = require("./helix.js");
 var del = require('del');
 var replace = require('gulp-string-replace');
-var exec = require('gulp-exec');
+
+var exec = require('child_process').exec;
 
 var config;
 if (fs.existsSync('../gulp-config.js.user')) {
@@ -32,24 +33,20 @@ gulp.task("express-setup", function (callback) {
         "Express-Patch-Unicorn-Location",
         "Express-Patch-Unicorn-Files",
 		"clean:express:old",
+		"express-convert-solution"
         callback);
 });
 
-gulp.task("express-convert-solution", function (callback) {
-  var options = {
-    continueOnError: false, // default = false, true means don't emit error event 
-    pipeStdout: false, // default = false, true means stdout is written to file.contents 
-    settingFile: "Aceik.HelixExpress.Runner.exe.config" // content passed to gutil.template() 
-  };
-  var reportOptions = {
-  	err: true, // default = true, false means don't write err 
-  	stderr: true, // default = true, false means don't write stderr 
-  	stdout: true // default = true, false means don't write stdout 
-  }
-  return gulp.src('./scripts/')
-    .pipe(exec('Aceik.HelixExpress.Runner.exe <%= options.settingFile %> <%= file.path %>', options))
-    .pipe(exec.reporter(reportOptions));
-});
+gulp.task('express-convert-solution', function (cb) {
+  var batchLocation = __dirname + '\\helix-express.bat';
+  exec(batchLocation, function (err, stdout, stderr) {
+	console.log(stdout);
+    console.log(stderr);
+    cb(err);
+  });
+  
+})
+
 
 gulp.task("express", function (callback) {
     config.runCleanBuilds = true;
