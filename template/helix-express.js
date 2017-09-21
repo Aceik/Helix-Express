@@ -167,6 +167,52 @@ gulp.task("Express-Patch-Web-Config", function () {
     .pipe(gulp.dest(config.websiteRoot + '/'));
 });
 
+gulp.task("Express-Patch-Unicorn-Location", function () {
+  var root = "./src";
+  var roots = [root];
+  var files = "/**/z.FitnessFirst.DevSettings.config";
+  var destination = "./src-express-unicorn";
+  return gulp.src(roots, { base: root }).pipe(
+    foreach(function (stream, file) {
+      console.log("Publishing from " + file.path);
+      gulp.src(file.path + files, { base: file.path })
+		
+		.pipe(replace('src', 'exp'))
+
+        .pipe(debug({ title: "Copying " }))
+		
+        .pipe(gulp.dest(file.path));
+      return stream;
+    })
+  );
+});
+
+gulp.task("Express-Patch-Unicorn-Files", function () {
+  var root = "./src";
+  var roots = [root];
+  var files = "/**/**/serialization/**/*.yml";
+  var destination = "./exp";
+  return gulp.src(roots, { base: root }).pipe(
+    foreach(function (stream, file) {
+      console.log("Publishing from " + file.path);
+      gulp.src(file.path + files, { base: file.path })
+		
+		.pipe(replace(','+  config.companyPrefix +'\.Foundation\.([a-zA-Z])*', ', Sitecore.Foundation.Express'))
+		.pipe(replace(', '+  config.companyPrefix +'\.Foundation\.([a-zA-Z])*', ', Sitecore.Foundation.Express'))
+		.pipe(replace(','+  config.companyPrefix +'\.Feature\.([a-zA-Z])*', ', Sitecore.Feature.Express'))
+		.pipe(replace(', '+  config.companyPrefix +'\.Feature\.([a-zA-Z])*', ', Sitecore.Feature.Express'))
+		.pipe(replace(','+  config.companyPrefix +'\.Project\.([a-zA-Z\.])*', ', Sitecore.Project.Express'))
+		.pipe(replace(', '+  config.companyPrefix +'\.Project\.([a-zA-Z\.])*', ', Sitecore.Project.Express'))
+
+		.pipe(newer(destination))
+        .pipe(debug({ title: "Copying " }))
+		
+        .pipe(gulp.dest(destination));
+      return stream;
+    })
+  );
+});
+
 gulp.task('clean:express:old', function () {
     return cleanUp(config.websiteRoot + "/bin/"+  config.companyPrefix +".*.{dll,pdb}");
 });
