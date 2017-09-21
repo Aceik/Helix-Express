@@ -1,6 +1,6 @@
 1)  Add this to gulpfile.js in the root folder:
-var express = require("./scripts/helix-express.js");
-- Also add the file helix-express.js  under the "Scripts" folder in root
+var express = require("./scripts/express/helix-express");
+- Copy the whole folder "Express" from the helix-express project
 
 2) from the command prompt in the root solution folder run:
 npm install gulp-exec --save-dev
