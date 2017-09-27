@@ -34,6 +34,7 @@ gulp.task("express-setup", function (callback) {
         "Express-Patch-Unicorn-Files",
 		"clean:express:old",
 		"express-convert-solution",
+		"Express-Patch-Web-Config",
         callback);
 });
 
@@ -44,6 +45,7 @@ gulp.task("express-uninstall", function (callback) {
         "Express-UnPatch-Unicorn-Files",
 		"clean:express:dlls",
 		"clean:express:solution",
+		"Express-UnPatch-Web-Config",
         callback);
 });
 
@@ -57,8 +59,15 @@ gulp.task('express-convert-solution', function (cb) {
 })
 
 gulp.task('clean:express:solution', function () {
-    cleanUp("/Sitecore.*.Express.{scproj,csproj.user}");
-	cleanUp("./HelixExpress.Template.sln");
+    var projectFiles = './../../Sitecore.*.Express.{scproj,csproj.user}';	
+	var slnFiles = __dirname + '\\HelixExpress.Template.sln';	
+	
+	console.log("Removing SLN and csproj files");
+	
+	del(['./*.Express.csproj*','./Aceik.HelixExpress.sln']).then(paths => {
+		console.log('Deleted files and folders:\n', paths.join('\n'));
+	});
+	
 });
 
 
@@ -204,6 +213,14 @@ gulp.task("Express-Patch-Web-Config", function () {
     .pipe(gulp.dest(config.websiteRoot + '/'));
 });
 
+gulp.task("Express-UnPatch-Web-Config", function () {
+  gulp.src([config.websiteRoot + "/web.config"])
+    .pipe(replace(', Sitecore.Foundation.Express', ', '+  config.companyPrefix +'\.Foundation\.REPLACEME'))
+	.pipe(replace(', Sitecore.Feature.Express', ', '+  config.companyPrefix +'\.Feature\.REPLACEME'))
+	.pipe(', Sitecore.Project.Express', replace(', '+  config.companyPrefix +'\.Project\.REPLACEME'))
+    .pipe(gulp.dest(config.websiteRoot + '/'));
+});
+
 gulp.task("Express-Patch-Unicorn-Location", function () {
   var root = "src";
   var roots = [root];
@@ -275,7 +292,8 @@ gulp.task('Express-UnPatch-Unicorn-Files', function () {
 });
 
 gulp.task('clean:express:old', function () {
-    return cleanUp(config.websiteRoot + "/bin/"+  config.companyPrefix +".*.{dll,pdb}");
+    cleanUp(config.websiteRoot + "/bin/"+  config.companyPrefix +".*.{dll,pdb}");
+	return cleanUp(config.websiteRoot + "/bin/"+  config.companyPrefix +".*.dll.config");
 });
 
 gulp.task('clean:express:dlls', function () {
