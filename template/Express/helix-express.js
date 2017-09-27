@@ -37,6 +37,16 @@ gulp.task("express-setup", function (callback) {
         callback);
 });
 
+gulp.task("express-uninstall", function (callback) {
+    config.runCleanBuilds = true;
+    return runSequence(
+        "Express-UnPatch-Unicorn-Location",
+        "Express-UnPatch-Unicorn-Files",
+		"clean:express:dlls",
+		"clean:express:solution",
+        callback);
+});
+
 gulp.task('express-convert-solution', function (cb) {
   var batchLocation = __dirname + '\\helix-express.bat';
   exec(batchLocation, function (err, stdout, stderr) {
@@ -44,8 +54,12 @@ gulp.task('express-convert-solution', function (cb) {
     console.log(stderr);
     cb(err);
   });
-  
 })
+
+gulp.task('clean:express:solution', function () {
+    cleanUp("/Sitecore.*.Express.{scproj,csproj.user}");
+	cleanUp("./HelixExpress.Template.sln");
+});
 
 
 gulp.task("express", function (callback) {
@@ -210,6 +224,26 @@ gulp.task("Express-Patch-Unicorn-Location", function () {
   );
 });
 
+gulp.task("Express-UnPatch-Unicorn-Location", function () {
+  var root = "src";
+  var roots = [root];
+  var files = "/**/z.FitnessFirst.DevSettings.config";
+  var destination = "./src-express-unicorn";
+  return gulp.src(roots, { base: root }).pipe(
+    foreach(function (stream, file) {
+      console.log("Publishing from " + file.path);
+      gulp.src(file.path + files, { base: file.path })
+		
+		.pipe(replace('exp', 'src'))
+
+        .pipe(debug({ title: "Copying " }))
+		
+        .pipe(gulp.dest(file.path));
+      return stream;
+    })
+  );
+});
+
 gulp.task("Express-Patch-Unicorn-Files", function () {
   var root = "src";
   var roots = [root];
@@ -236,8 +270,16 @@ gulp.task("Express-Patch-Unicorn-Files", function () {
   );
 });
 
+gulp.task('Express-UnPatch-Unicorn-Files', function () {
+    return cleanUp("./exp");
+});
+
 gulp.task('clean:express:old', function () {
     return cleanUp(config.websiteRoot + "/bin/"+  config.companyPrefix +".*.{dll,pdb}");
+});
+
+gulp.task('clean:express:dlls', function () {
+    return cleanUp(config.websiteRoot + "/bin/Sitecore.*.Express.{dll,pdb}");
 });
 
 var cleanUp = function (location) {
