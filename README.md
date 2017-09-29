@@ -24,7 +24,8 @@ That said Helix Express could be used to:
 
 * On low spec computers where Visual Studio really struggles to load a full helix solution.
 * For quicker deployments
-* For support and maintance purposes. If your doing lots of bug fixing using Helix Express is may be a quicker way to verify fixes. 
+* For support and maintance purposes. If your doing lots of bug fixing using Helix Express may be a quicker way to verify fixes. 
+* Faster debugging, less symbols to load up in Visual Studio
 * On a testing machine or for FED developers who need to run the solution. This could save them sometime. 
 
 
