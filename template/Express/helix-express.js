@@ -217,7 +217,7 @@ gulp.task("Express-UnPatch-Web-Config", function () {
   gulp.src([config.websiteRoot + "/web.config"])
     .pipe(replace(', Sitecore.Foundation.Express', ', '+  config.companyPrefix +'\.Foundation\.REPLACEME'))
 	.pipe(replace(', Sitecore.Feature.Express', ', '+  config.companyPrefix +'\.Feature\.REPLACEME'))
-	.pipe(', Sitecore.Project.Express', replace(', '+  config.companyPrefix +'\.Project\.REPLACEME'))
+	.pipe(replace(', Sitecore.Project.Express', ', '+  config.companyPrefix +'\.Project\.REPLACEME'))
     .pipe(gulp.dest(config.websiteRoot + '/'));
 });
 
