@@ -6,7 +6,7 @@ Speed up your deployment time.
 
 # Express Version
 
-After following the installation instructions [Wiki](../../wiki) and running the gulp command "gulp express-setup" the root of your project will contain a new Visual Studio Solution and 3 projects. 
+After following the installation instructions (see below) and running the gulp command "gulp express-setup" the root of your project will contain a new Visual Studio Solution and 3 projects. 
 
 ![](https://i1.wp.com/aceiksolutions.files.wordpress.com/2017/09/sln.png?ssl=1&w=450)
 ![](https://i1.wp.com/aceiksolutions.files.wordpress.com/2017/09/projects.png?ssl=1&w=450)
