@@ -20,12 +20,13 @@ namespace Aceik.HelixExpress
         private bool _includeTestProjects = false;
 
         private string _templates = $"D:\\Development\\Projects\\Helix-Express\\template\\";
-        private string _companyPrefix = $"FLG";
+        private string _companyPrefix = $"Sitecore";
         private readonly string _slnTemplate;
-        private string _newRootFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
-        private string _newExpressFolder = $"D:\\Development\\Projects\\ff-sitecore\\";
+        private string _newRootFolder = $"D:\\Development\\Projects\\habitat\\";
+        private string _newExpressFolder = $"D:\\Development\\Projects\\habitat\\";
         private readonly string _newSlnLocation;
         private readonly string _referenceSlnLocation;
+        private readonly string _originalSolutionName;
 
         private readonly string _foundationCsprojTemplateLocation;
         private readonly string _featureCsprojTemplateLocation;
@@ -38,7 +39,7 @@ namespace Aceik.HelixExpress
         private Solution ExpressSolution { get; set; }
         private Solution OriginalSolution { get; set; }
 
-        public SolutionCreator(string companyPrefix, string solutionFolderPath, string helixExpressTemplatesFolder)
+        public SolutionCreator(string companyPrefix, string solutionFolderPath, string helixExpressTemplatesFolder, string originalHelixSolution)
         {
             if(!string.IsNullOrWhiteSpace(companyPrefix))
                 _companyPrefix = companyPrefix;
@@ -46,11 +47,13 @@ namespace Aceik.HelixExpress
                 _newRootFolder = _newExpressFolder = solutionFolderPath;
             if (!string.IsNullOrWhiteSpace(helixExpressTemplatesFolder))
                 _templates = helixExpressTemplatesFolder;
+            if (!string.IsNullOrWhiteSpace(originalHelixSolution))
+                _originalSolutionName = originalHelixSolution;
             _foundationCsprojTemplateLocation = _templates + $"Sitecore.Foundation.Express.csproj";
             _featureCsprojTemplateLocation = _templates + $"Sitecore.Feature.Express.csproj";
             _websiteCsprojTemplateLocation = _templates + $"Sitecore.Project.Express.csproj";
             _slnTemplate = _templates + $"HelixExpress.Template.sln";
-            _referenceSlnLocation = _newRootFolder + $"FLG.FitnessFirst.Sitecore.sln";
+            _referenceSlnLocation = _newRootFolder + _originalSolutionName;
             _newSlnLocation = _newExpressFolder + $"Aceik.HelixExpress.sln";
             _newFoundationCsprojeLocation = _newExpressFolder + $"Sitecore.Foundation.Express.csproj";
             _newFeatureCsprojeLocation = _newExpressFolder + $"Sitecore.Feature.Express.csproj";
@@ -80,8 +83,10 @@ namespace Aceik.HelixExpress
                 File.Copy(_slnTemplate, _newSlnLocation);
             }
 
+            Console.Out.WriteLine($"loading new solution: {_newSlnLocation}");
             this.ExpressSolution = Solution.LoadFrom(_newSlnLocation);
             Console.Out.WriteLine($"Solution loaded: {_newSlnLocation}");
+            Console.Out.WriteLine($"loading original: {_referenceSlnLocation}");
             this.OriginalSolution = Solution.LoadFrom(_referenceSlnLocation);
             Console.Out.WriteLine($"Original Solution loaded: {_referenceSlnLocation}");
 
