@@ -29,7 +29,8 @@ namespace Aceik.HelixExpress.Runner
 
             var root = config.AppSettings.Settings["SolutionRootFolder"];
             var helixExpressFolder = config.AppSettings.Settings["HelixExpressTemplateFolder"];
-            new SolutionCreator(companyPrefix.Value, root.Value, helixExpressFolder.Value).LoadTemplateSlnFile();
+            var originalHelixSolution = config.AppSettings.Settings["OriginalHelixSolution"];
+            new SolutionCreator(companyPrefix.Value, root.Value, helixExpressFolder.Value, originalHelixSolution.Value).LoadTemplateSlnFile();
         }
     }
 }
