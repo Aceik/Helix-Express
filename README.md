@@ -41,7 +41,7 @@ That said Helix Express could be used to:
 4) Add variable `companyPrefix: "MyPrefix"` into gulp-config.js
 
 5) from the command prompt in the root solution folder run:
-npm install gulp-exec --save-dev<br/>
+<br/>npm install gulp-exec --save-dev<br/>
 npm install gulp-string-replace --save-dev<br/>
 npm install del --save-dev<br/>
 
