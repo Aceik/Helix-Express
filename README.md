@@ -38,13 +38,12 @@ That said Helix Express could be used to:
 
 3) Edit the config file "Aceik.HelixExpress.Runner.exe.config" in the express folder.
 
-4) from the command prompt in the root solution folder run:
-npm install gulp-exec --save-dev
-npm install gulp-string-replace --save-dev
+4) Add variable `companyPrefix: "MyPrefix"` into gulp-config.js
 
-5) Add variable `companyPrefix: "MyPrefix"` into gulp-config.js
-
-5) run "npm install" in the root
+5) from the command prompt in the root solution folder run:
+npm install gulp-exec --save-dev<br/>
+npm install gulp-string-replace --save-dev<br/>
+npm install del --save-dev<br/>
 
 6) run "gulp express-setup"
 
@@ -60,5 +59,8 @@ npm install gulp-string-replace --save-dev
 Cavets 
 
 1)  -- This will only fix config files with namespace matches within Foundation/Feature/Project folders.
+
+# Un-Installation
+
 
 
