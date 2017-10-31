@@ -308,3 +308,7 @@ var cleanUp = function (location) {
         { force: true });
 };
 
+gulp.task('clean:configs', function () {
+    return cleanUp(config.websiteRoot + "/App_Config/Include/{Feature,Foundation,Project,IOC}/**");
+});
+
