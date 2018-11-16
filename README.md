@@ -1,4 +1,7 @@
-# Helix Express
+General feedback about this project was that it went against the general direction of Helix.  This wasn't the intent of the project in general, it was simply to help with faster build times. We will accept the feedback and archive this project. 
+
+
+# Helix Express -- ON HOLD
 
 This project provides the GULP command line tools to flatten your Helix solution down in 3 x layer projects. 
 
